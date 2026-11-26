@@ -12,7 +12,12 @@ dist
 dist-ssr
 *.local
 
-# Editor directories and files
+# Env files — NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Editor directories
 .vscode/*
 !.vscode/extensions.json
 .idea
@@ -22,3 +27,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+.vercel

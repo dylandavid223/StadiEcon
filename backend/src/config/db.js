@@ -12,17 +12,18 @@ export const pool = mysql.createPool({
   waitForConnections: true,
   connectionLimit: 10,
   queueLimit: 0,
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: true } : undefined,
 })
 
-// Fail fast if DB is unreachable
 export async function testConnection() {
   try {
     const conn = await pool.getConnection()
     await conn.ping()
     conn.release()
     console.log('✓ MySQL connected')
+    return true
   } catch (err) {
     console.error('✗ MySQL connection failed:', err.message)
-    process.exit(1)
+    return false
   }
 }

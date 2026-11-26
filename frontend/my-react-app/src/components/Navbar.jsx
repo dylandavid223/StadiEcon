@@ -1,5 +1,6 @@
-import { Link, NavLink } from 'react-router-dom'
+import { Link, NavLink, useNavigate } from 'react-router-dom'
 import { useTheme } from '../context/ThemeContext'
+import { useAuth } from '../context/AuthContext'
 
 function SunIcon() {
   return (
@@ -25,6 +26,13 @@ const LOGO_URL =
 
 function Navbar() {
   const { theme, toggleTheme } = useTheme()
+  const { user, logout } = useAuth()
+  const navigate = useNavigate()
+
+  const handleLogout = () => {
+    logout()
+    navigate('/')
+  }
 
   return (
     <nav className="navbar">
@@ -39,8 +47,9 @@ function Navbar() {
         <NavLink to="/" end>Home</NavLink>
         <NavLink to="/athletes">Athletes</NavLink>
         <NavLink to="/marketplace">Devices</NavLink>
-        <NavLink to="/dashboard">Dashboard</NavLink>
-        <NavLink to="/login">Login</NavLink>
+
+        {/* Dashboard only visible when logged in */}
+        {user && <NavLink to="/dashboard">Dashboard</NavLink>}
 
         <button
           type="button"
@@ -51,7 +60,25 @@ function Navbar() {
           {theme === 'dark' ? <SunIcon /> : <MoonIcon />}
         </button>
 
-        <NavLink to="/register" className="btn-primary">Join</NavLink>
+        {user ? (
+          <>
+            <span className="nav-user">
+              {user.name.split(' ')[0]}
+            </span>
+            <button
+              type="button"
+              className="btn-primary"
+              onClick={handleLogout}
+            >
+              Log out
+            </button>
+          </>
+        ) : (
+          <>
+            <NavLink to="/login">Login</NavLink>
+            <NavLink to="/register" className="btn-primary">Join</NavLink>
+          </>
+        )}
       </div>
     </nav>
   )

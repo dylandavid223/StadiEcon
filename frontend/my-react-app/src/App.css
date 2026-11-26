@@ -99,6 +99,7 @@
   --btn-fg: #041008;
 }
 
+/* ---------- Reset ---------- */
 *, *::before, *::after { box-sizing: border-box; }
 html { scroll-behavior: smooth; transition: background-color 0.3s ease; }
 
@@ -237,6 +238,24 @@ img { display: block; max-width: 100%; }
   border-radius: 2px;
 }
 
+/* Navbar — logged-in user name chip */
+.nav-user {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: var(--neon);
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: var(--neon-soft);
+  border: 1px solid var(--neon-line);
+  white-space: nowrap;
+}
+[data-theme="light"] .nav-user {
+  background: rgba(0, 168, 104, 0.08);
+}
+
+/* Theme toggle */
 .theme-toggle {
   width: 40px;
   height: 40px;
@@ -295,6 +314,11 @@ img { display: block; max-width: 100%; }
   transform: translateY(-1px);
 }
 .btn-primary:active { transform: translateY(0); }
+.btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
 
 .btn-outline {
   background: transparent;
@@ -601,7 +625,9 @@ img { display: block; max-width: 100%; }
   margin-bottom: 32px;
 }
 
-/* Auth */
+/* =========================================================
+   Auth pages
+   ========================================================= */
 .auth-page {
   max-width: 440px;
   margin: 64px auto;
@@ -765,7 +791,7 @@ img { display: block; max-width: 100%; }
 }
 
 /* =========================================================
-   Page headers (Athletes / Devices)
+   Page headers (Athletes / Devices / Dashboard)
    ========================================================= */
 .page-header {
   padding: clamp(56px, 8vw, 100px) 0 clamp(48px, 6vw, 72px);
@@ -1053,6 +1079,69 @@ img { display: block; max-width: 100%; }
 }
 
 /* =========================================================
+   Auth — role picker
+   ========================================================= */
+.role-picker {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+.role-option {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px 16px;
+  background: var(--surface-2);
+  border: 1.5px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  font-family: inherit;
+}
+.role-option strong {
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+.role-option span {
+  font-size: var(--fs-xs);
+  color: var(--text-faint);
+}
+.role-option:hover {
+  border-color: var(--neon-line);
+}
+.role-option.active {
+  border-color: var(--neon);
+  background: var(--neon-soft);
+}
+.role-option.active strong {
+  color: var(--neon);
+}
+[data-theme="light"] .role-option.active {
+  background: rgba(0, 168, 104, 0.08);
+}
+
+/* =========================================================
+   Dashboard
+   ========================================================= */
+.dashboard-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 40px;
+}
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 22px;
+}
+
+/* =========================================================
    Responsive
    ========================================================= */
 @media (max-width: 900px) {
@@ -1061,6 +1150,7 @@ img { display: block; max-width: 100%; }
   .nav-links a:not(.btn-primary) { display: none; }
   .athletes-grid,
   .devices-grid { grid-template-columns: repeat(2, 1fr); }
+  .dashboard-grid { grid-template-columns: 1fr; }
 }
 
 @media (max-width: 800px) {
@@ -1079,4 +1169,6 @@ img { display: block; max-width: 100%; }
   .devices-grid { grid-template-columns: 1fr; }
   .athlete-photo,
   .device-visual { aspect-ratio: 5 / 3; }
+  .role-picker { grid-template-columns: 1fr; }
+  .nav-user { display: none; }
 }
