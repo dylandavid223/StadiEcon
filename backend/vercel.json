@@ -1,16 +1,15 @@
 {
   "version": 2,
-  "functions": {
-    "src/app.js": {
-      "runtime": "nodejs22.x",
-      "memory": 1024,
-      "maxDuration": 10
-    }
-  },
-  "rewrites": [
+  "builds": [
     {
-      "source": "/(.*)",
-      "destination": "/src/app.js"
+      "src": "src/app.js",
+      "use": "@vercel/node"
+    }
+  ],
+  "routes": [
+    {
+      "src": "/(.*)",
+      "dest": "src/app.js"
     }
   ]
 }
