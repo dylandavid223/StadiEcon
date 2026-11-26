@@ -55,4 +55,19 @@ app.use((err, _req, res, _next) => {
   res.status(500).json({ message: err.message || 'Server error' })
 })
 
+/* ---------- Root — API index ---------- */
+app.get('/', (_req, res) => {
+  res.json({
+    name: 'StadiEcon API',
+    version: '1.0.0',
+    status: 'running',
+    endpoints: {
+      health: 'GET /api/health',
+      register: 'POST /api/auth/register',
+      login: 'POST /api/auth/login',
+      me: 'GET /api/auth/me (protected)',
+    },
+  })
+})
+
 export default app
