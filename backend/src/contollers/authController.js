@@ -20,7 +20,6 @@ function publicUser(user) {
   }
 }
 
-/* ---------- POST /api/auth/register ---------- */
 export async function register(req, res) {
   try {
     const { name, email, password, role } = req.body
@@ -46,7 +45,6 @@ export async function register(req, res) {
 
     const passwordHash = await bcrypt.hash(password, 10)
 
-    // Create user + profile row in one transaction
     const user = await prisma.user.create({
       data: {
         name: name.trim(),
@@ -69,7 +67,6 @@ export async function register(req, res) {
   }
 }
 
-/* ---------- POST /api/auth/login ---------- */
 export async function login(req, res) {
   try {
     const { email, password } = req.body
@@ -100,7 +97,6 @@ export async function login(req, res) {
   }
 }
 
-/* ---------- GET /api/auth/me (protected) ---------- */
 export async function me(req, res) {
   try {
     const user = await prisma.user.findUnique({
