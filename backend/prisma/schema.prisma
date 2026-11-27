@@ -1,0 +1,71 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  athlete
+  brand
+  admin
+}
+
+enum Gender {
+  male
+  female
+  other
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  name         String   @db.VarChar(120)
+  email        String   @unique @db.VarChar(190)
+  passwordHash String   @map("password_hash") @db.VarChar(255)
+  role         Role     @default(athlete)
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+
+  athleteProfile AthleteProfile?
+  brandProfile   BrandProfile?
+
+  @@map("users")
+}
+
+model AthleteProfile {
+  id            Int      @id @default(autoincrement())
+  userId        Int      @unique @map("user_id")
+  discipline    String?  @db.VarChar(80)
+  dateOfBirth   DateTime? @map("date_of_birth") @db.Date
+  gender        Gender?
+  location      String?  @db.VarChar(120)
+  bio           String?  @db.Text
+  personalBest  String?  @map("personal_best") @db.VarChar(60)
+  photoUrl      String?  @map("photo_url") @db.VarChar(500)
+  verified      Boolean  @default(false)
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("athlete_profiles")
+}
+
+model BrandProfile {
+  id          Int      @id @default(autoincrement())
+  userId      Int      @unique @map("user_id")
+  companyName String?  @map("company_name") @db.VarChar(160)
+  industry    String?  @db.VarChar(80)
+  website     String?  @db.VarChar(255)
+  description String?  @db.Text
+  logoUrl     String?  @map("logo_url") @db.VarChar(500)
+  verified    Boolean  @default(false)
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("brand_profiles")
+}
