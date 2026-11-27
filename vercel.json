@@ -1,16 +1,7 @@
 {
   "services": {
     "frontend": {
-      "root": "frontend/my-react-app/",
-      "framework": "vite",
-      "bindings": [
-        {
-          "type": "service",
-          "service": "backend",
-          "format": "url",
-          "env": "BACKEND_INTERNAL_URL"
-        }
-      ]
+      "root": "frontend/my-react-app/"
     },
     "backend": {
       "root": "backend/",
