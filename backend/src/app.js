@@ -8,27 +8,35 @@ dotenv.config()
 
 const app = express()
 
-/* ---------- CORS: supports multiple origins (comma-separated) ---------- */
+/* ---------- CORS ---------- */
 const allowedOrigins = (process.env.CLIENT_ORIGIN || 'http://localhost:5173')
   .split(',')
   .map((o) => o.trim())
   .filter(Boolean)
 
-app.use(
-  cors({
-    origin: (origin, callback) => {
-      // Allow server-to-server / curl (no origin header)
-      if (!origin) return callback(null, true)
-      if (allowedOrigins.includes(origin)) return callback(null, true)
-      return callback(new Error(`CORS blocked for origin: ${origin}`))
-    },
-    credentials: true,
-  })
-)
+const corsOptions = {
+  origin: (origin, callback) => {
+    // No origin (server-to-server, curl, health checks)
+    if (!origin) return callback(null, true)
+    // Allowed origin
+    if (allowedOrigins.includes(origin)) return callback(null, true)
+    // Reject silently — do NOT throw, so OPTIONS still responds cleanly
+    console.warn(`CORS: blocked origin ${origin}`)
+    return callback(null, false)
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  optionsSuccessStatus: 204,
+}
+
+// Handle preflight for every route
+app.options('*', cors(corsOptions))
+app.use(cors(corsOptions))
 
 app.use(express.json())
 
-/* ---------- Health check — pings DB ---------- */
+/* ---------- Health check ---------- */
 app.get('/api/health', async (_req, res) => {
   try {
     await pool.query('SELECT 1')
@@ -46,28 +54,13 @@ app.get('/api/health', async (_req, res) => {
 /* ---------- Routes ---------- */
 app.use('/api/auth', authRoutes)
 
-/* ---------- 404 ---------- */
+/* ---------- 404 fallback ---------- */
 app.use((_req, res) => res.status(404).json({ message: 'Not found' }))
 
-/* ---------- Global error handler (so CORS errors return JSON, not HTML) ---------- */
+/* ---------- Global error handler ---------- */
 app.use((err, _req, res, _next) => {
   console.error('Server error:', err.message)
   res.status(500).json({ message: err.message || 'Server error' })
-})
-
-/* ---------- Root — API index ---------- */
-app.get('/', (_req, res) => {
-  res.json({
-    name: 'StadiEcon API',
-    version: '1.0.0',
-    status: 'running',
-    endpoints: {
-      health: 'GET /api/health',
-      register: 'POST /api/auth/register',
-      login: 'POST /api/auth/login',
-      me: 'GET /api/auth/me (protected)',
-    },
-  })
 })
 
 export default app
