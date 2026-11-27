@@ -1,9 +1,0 @@
-{
-  "devDependencies": {
-    "prisma": "^8.0.0-rc.36"
-  },
-  "dependencies": {
-    "@prisma/client": "^7.10.1",
-    "@tidbcloud/prisma-adapter": "^6.17.0"
-  }
-}
