@@ -3,6 +3,9 @@ import jwt from 'jsonwebtoken'
 import { prisma } from '../config/prisma.js'
 
 function signToken(user) {
+  if (!process.env.JWT_SECRET) {
+    throw new Error('JWT_SECRET environment variable is not set')
+  }
   return jwt.sign(
     { id: user.id, email: user.email, role: user.role },
     process.env.JWT_SECRET,
@@ -25,10 +28,13 @@ export async function register(req, res) {
     const { name, email, password, role } = req.body
 
     if (!name || !email || !password || !role) {
-      return res.status(400).json({ message: 'All fields are required' })
+      return res.status(400).json({
+        message: 'All fields are required',
+        received: { name: !!name, email: !!email, password: !!password, role: !!role },
+      })
     }
     if (!['athlete', 'brand'].includes(role)) {
-      return res.status(400).json({ message: 'Invalid role' })
+      return res.status(400).json({ message: 'Invalid role', role })
     }
     if (password.length < 8) {
       return res.status(400).json({ message: 'Password must be at least 8 characters' })
@@ -63,7 +69,12 @@ export async function register(req, res) {
     })
   } catch (err) {
     console.error('register error:', err)
-    return res.status(500).json({ message: 'Registration failed' })
+    return res.status(500).json({
+      message: 'Registration failed',
+      error: err.message,
+      code: err.code,
+      stack: err.stack,
+    })
   }
 }
 
@@ -93,7 +104,11 @@ export async function login(req, res) {
     })
   } catch (err) {
     console.error('login error:', err)
-    return res.status(500).json({ message: 'Login failed' })
+    return res.status(500).json({
+      message: 'Login failed',
+      error: err.message,
+      code: err.code,
+    })
   }
 }
 
@@ -115,6 +130,10 @@ export async function me(req, res) {
     return res.json({ user })
   } catch (err) {
     console.error('me error:', err)
-    return res.status(500).json({ message: 'Failed to fetch user' })
+    return res.status(500).json({
+      message: 'Failed to fetch user',
+      error: err.message,
+      code: err.code,
+    })
   }
 }
